@@ -11,9 +11,66 @@ Implementar la clase LinkedList, definiendo los siguientes métodos:
   En caso de que la búsqueda no arroje resultados, search debe retornar null.
 */
 
-function LinkedList() {}
+function LinkedList() {
+  this.length = 0;
+  this.head = null
+}
 
-function Node(value) {}
+function Node(value) {
+  this.value = value;
+  this.next = null
+}
+
+LinkedList.prototype.add = function (dato){
+  var current = this.head;
+  var node = new Node(dato);
+  if(!current){
+    this.head= node;
+    this.length ++;
+    return node;
+  }
+  while(current.next){
+    current = current.next;
+  }
+  current.next = node;
+  this.length ++;
+  return node;
+}
+
+LinkedList.prototype.remove = function (){
+  var current = this.head;
+  var toremove;
+  if(!current){
+    return this.head;
+  } else if (!current.next){
+    this.head = null
+    return current.value;
+  }
+  while(current.next.next){
+    current = current.next
+  }
+  toremove = current.next.value;
+  current.next = null;
+  return toremove;
+}
+
+LinkedList.prototype.search = function (dato){
+  if(this.head === null){
+    return null;
+  }
+  let current = this.head;
+  while(current){
+    if(current.value === dato){
+      return current.value;
+    } else if(typeof (dato) === 'function'){
+      if(dato(current.value)){
+        return current.value;
+      }
+    }
+    current = current.next;
+  }
+  return null;
+}
 
 /*
 Implementar la clase HashTable.
@@ -30,8 +87,50 @@ La clase debe tener los siguientes métodos:
 Ejemplo: supongamos que quiero guardar {instructora: 'Ani'} en la tabla. Primero puedo chequear, con hasKey, si ya hay algo en la tabla con el nombre 'instructora'; luego, invocando set('instructora', 'Ani'), se almacenará el par clave-valor en un bucket específico (determinado al hashear la clave)
 */
 
-function HashTable() {}
+function HashTable() {
+  this.numBuckets = 35;
+  this.casilleros = []; 
+}
 
+HashTable.prototype.hash = function(value){
+  var acum = 0;
+  for (var i=0; i<value.length; i++){
+    acum = acum + value.charCodeAt(i);
+  }
+return acum % this.numBuckets;
+}
+
+HashTable.prototype.set = function(key,value){
+  if(typeof key !== 'string' ){
+    throw new TypeError('Keys must be strings');
+  }
+  var posición = this.hash(key);
+  this.casilleros[posición] = this.casilleros[posición] || [];
+  this.casilleros[posición].unshift({
+    key:key,
+    value:value
+  })
+}
+
+HashTable.prototype.get = function(key){
+  var posición = this.hash(key);
+  for(var i=0; i<this.casilleros[posición].length; i++){
+    if(this.casilleros[posición][i].key === key){
+      return this.casilleros[posición][i].value;
+    }
+  }
+  return false;
+}
+
+HashTable.prototype.hasKey = function(key){
+var posición = this.hash(key);
+  for(var i=0; i<this.casilleros[posición].length; i++){
+    if(this.casilleros[posición][i].key === key){
+      return true;
+    }
+  }
+  return false;
+}
 // No modifiquen nada debajo de esta linea
 // --------------------------------
 
